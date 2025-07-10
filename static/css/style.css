@@ -1,0 +1,121 @@
+/* static/css/style.css */
+
+/* 전체 배경: 녹색 그라데이션 혹은 이미지 */
+body {
+  margin: 0;
+  padding: 0;
+  /* 배경을 이미지로 하고 싶다면 아래 주석을 해제하고 plant-bg.jpg 파일을 static/images/plant-bg.jpg 경로에 넣어주세요 */
+  /* background: url('../images/plant-bg.jpg') no-repeat center center fixed; */
+  /* background-size: cover; */
+  /* 이미지가 없으면 아래 그라데이션으로 대체 */
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1b5e20;
+}
+
+/* 최상단 헤더 */
+header {
+  background-color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  padding: 20px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  color: #2e7d32;
+}
+
+/* 메인 컨테이너 중앙 정렬 */
+.container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* 비디오 스트림 박스 */
+.video-container {
+  position: relative;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.video-container video,
+.video-container img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* FPS 표시 라벨 */
+.fps-label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+/* 감지 결과 리스트 */
+.detection-list {
+  margin-top: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.detection-list h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  color: #33691e;
+}
+.detection-list ul {
+  list-style: none;
+  padding-left: 0;
+}
+.detection-list ul li {
+  padding: 6px 0;
+  border-bottom: 1px solid #c8e6c9;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+.detection-list ul li:last-child {
+  border-bottom: none;
+}
+
+/* 버튼 스타일 (예: 캡처 버튼 등) */
+.btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #2e7d32;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+}
+.btn:hover {
+  background-color: #1b5e20;
+}
+
+/* 작은 화면(모바일) 대응 */
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+  .detection-list h2 {
+    font-size: 1.1rem;
+  }
+}
