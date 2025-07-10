@@ -89,8 +89,3 @@ Companion_Plant_Project/
 - 향후: 수분 공급 자동화, 성장 히스토리 그래프, TTS 음성 알림 계획 중
 
 ---
-
-## 📧 Contact
-
-- ericsungho@naver.com
-- https://github.com/SE0NGH0
