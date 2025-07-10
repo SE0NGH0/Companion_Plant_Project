@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}회원가입 - 실시간 토마토 모니터링{% endblock %}
+
+{% block head_extra %}
+<style>
+  .form-container {
+    width: 360px;
+    margin: 100px auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .form-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #2b7a0b;
+  }
+  .form-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  .form-container label {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  .form-container input {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .form-container button {
+    padding: 0.6rem;
+    background-color: #2b7a0b;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .form-container .error {
+    color: red;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .form-container .link {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .form-container .link a {
+    color: #2b7a0b;
+    text-decoration: none;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="form-container">
+    <h2>회원가입</h2>
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+    <form method="post">
+      <label for="username">아이디</label>
+      <input type="text" id="username" name="username" required />
+
+      <label for="email">이메일</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="password">비밀번호</label>
+      <input type="password" id="password" name="password" required />
+
+      <label for="password2">비밀번호 확인</label>
+      <input type="password" id="password2" name="password2" required />
+
+      <button type="submit">가입하기</button>
+    </form>
+    <div class="link">
+      이미 계정이 있으신가요?
+      <a href="{{ url_for('login') }}">로그인</a>
+    </div>
+  </div>
+{% endblock %}

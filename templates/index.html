@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}실시간 토마토 모니터링{% endblock %}
+
+{% block head_extra %}
+<style>
+  /* 기본 폰트 및 배경 설정 */
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #fafafa;
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+  header {
+    background-color: #2b7a0b;
+    color: #fff;
+    padding: 1rem 2rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #fff;
+  }
+  header .logout-btn {
+    position: absolute;
+    top: 50%;
+    right: 2rem;
+    transform: translateY(-50%);
+  }
+  header .logout-btn a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    border: 1px solid #fff;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+  }
+
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 2rem;
+    gap: 2rem;
+  }
+
+  .video-container {
+    position: relative;
+    background-color: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+  .video-container img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  .fps-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    z-index: 10;
+  }
+
+  .detection-list {
+    width: 320px;
+    max-height: 480px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 1rem;
+  }
+  .detection-list h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+  }
+  .detection-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .detection-list ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+  }
+  .detection-list ul li:last-child {
+    border-bottom: none;
+  }
+  .detection-list ul li span:first-child {
+    font-weight: bold;
+    color: #2b7a0b;
+    margin-right: 0.5rem;
+  }
+  .detection-list ul li span:last-child {
+    font-size: 0.9rem;
+    color: #555;
+  }
+
+  /* 센서 상태 표시 전용 스타일 */
+  .sensor-list {
+    width: 320px;
+    max-height: 480px;
+    overflow-y: auto;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 1rem;
+  }
+  .sensor-list h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+  }
+  .sensor-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .sensor-list ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+  }
+  .sensor-list ul li:last-child {
+    border-bottom: none;
+  }
+  .sensor-list ul li span:first-child {
+    font-weight: bold;
+    color: #2b7a0b;
+    margin-right: 0.5rem;
+  }
+  .sensor-list ul li span:last-child {
+    font-size: 0.9rem;
+    color: #555;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <!-- 상단 헤더 -->
+  <header>
+    <h1>🌱 식물 성장·컨디션 실시간 모니터링</h1>
+    <div class="logout-btn">
+      <a href="{{ url_for('logout') }}">로그아웃</a>
+    </div>
+  </header>
+
+  <!-- 메인 콘텐츠 -->
+  <div class="container">
+    <!-- 비디오 스트림 영역 -->
+    <div class="video-container">
+      <div id="fps" class="fps-label">FPS: --</div>
+      <img id="video-stream" src="{{ url_for('video_feed') }}" alt="실시간 스트리밍" />
+    </div>
+
+    <!-- 10초 간격 저장된 감지 데이터 리스트 -->
+    <div class="detection-list">
+      <h2>최근 감지 내역</h2>
+      <ul id="detection-items">
+        <!-- JavaScript가 데이터를 채웁니다 -->
+      </ul>
+    </div>
+
+    <!-- 센서 상태 표시 패널 -->
+    <div class="sensor-list">
+      <h2>실시간 센서 상태</h2>
+      <ul id="sensor-items">
+        <li>
+          <span>온도</span>
+          <span id="temp-val">–</span>
+        </li>
+        <li>
+          <span>습도</span>
+          <span id="hum-val">–</span>
+        </li>
+        <li>
+          <span>조도</span>
+          <span id="lux-val">–</span>
+        </li>
+        <li>
+          <span>수위</span>
+          <span id="water-val">–</span>
+        </li>
+        <li>
+          <span>마지막 업데이트</span>
+          <span id="time-val">–</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- JavaScript: FPS 계산, 감지 기록 및 센서 데이터 가져오기 -->
+  <script>
+    // ===== FPS 계산 =====
+    let lastTime = performance.now();
+    let frameCount = 0;
+    function updateFPS() {
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        const fps = frameCount / ((now - lastTime) / 1000);
+        document.getElementById("fps").innerText = "FPS: " + fps.toFixed(1);
+        lastTime = now;
+        frameCount = 0;
+      }
+      requestAnimationFrame(updateFPS);
+    }
+    const videoImg = document.getElementById("video-stream");
+    videoImg.onload = () => {
+      frameCount++;
+    };
+
+    // ===== 감지 데이터(fetch /data) =====
+    async function fetchDetectionData() {
+      try {
+        const resp = await fetch("/data");
+        const history = await resp.json();
+        const ul = document.getElementById("detection-items");
+        ul.innerHTML = "";
+
+        history.forEach(item => {
+          const li = document.createElement("li");
+
+          // 타임스탬프
+          const timeSpan = document.createElement("span");
+          timeSpan.textContent = item.timestamp;
+
+          // 상태 문자열 생성
+          const statusSpan = document.createElement("span");
+          const growthText = (item.growth_label !== null) ? item.growth_label : "None";
+          let conditionText;
+          if (item.condition_label === "tomato_blight") {
+            conditionText = "병충해";
+          } else {
+            conditionText = "None";
+          }
+          statusSpan.textContent = `성장:${growthText} | 상태:${conditionText}`;
+
+          li.appendChild(timeSpan);
+          li.appendChild(statusSpan);
+          ul.appendChild(li);
+        });
+      } catch (e) {
+        console.error("감지 데이터 로드 오류:", e);
+      }
+    }
+
+    // ===== 센서 데이터(fetch /sensor_status) =====
+    let lastTimestamp = null;
+    async function fetchSensorData() {
+      try {
+        const res = await fetch('/sensor_status');
+        if (!res.ok) throw new Error('네트워크 오류');
+        const data = await res.json();
+        // 새로운 last_update가 이전과 다르면 화면 갱신
+        if (data.last_update && data.last_update !== lastTimestamp) {
+          lastTimestamp = data.last_update;
+          document.getElementById('temp-val').textContent =
+            data.temperature !== null ? data.temperature.toFixed(1) + '°C' : '측정 실패';
+          document.getElementById('hum-val').textContent =
+            data.humidity !== null ? data.humidity.toFixed(1) + '%' : '측정 실패';
+          document.getElementById('lux-val').textContent =
+            data.lux !== null ? data.lux.toFixed(0) + ' lux' : '측정 실패';
+          document.getElementById('water-val').textContent =
+            data.water_detected === true  ? '물 고임(HIGH)' :
+            data.water_detected === false ? '정상(LOW)'   :
+            '측정 실패';
+          document.getElementById('time-val').textContent = data.last_update;
+        }
+        // last_update가 동일하면 아무 작업도 하지 않음 (이전 값을 그대로 유지)
+      } catch (err) {
+        console.error('센서 데이터 로드 오류:', err);
+      }
+    }
+
+    // ===== 페이지 로드 시 초기화 및 주기적 갱신 =====
+    window.addEventListener("DOMContentLoaded", () => {
+      requestAnimationFrame(updateFPS);
+      fetchDetectionData();
+      fetchSensorData();
+      setInterval(fetchDetectionData, 5000);  // 5초마다 감지 데이터 갱신
+      setInterval(fetchSensorData, 2000);     // 2초마다 센서 데이터 확인
+    });
+  </script>
+{% endblock %}
